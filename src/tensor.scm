@@ -38,12 +38,19 @@
 	 (strides (cdr t)))
     (cond ((out-of-bounds? indices shape)
 	   (error indices "Are out of bounds!"))
-	  ((null? (cdr indices))
+	  ((< (length indices) (length shape))
 	   (let ((v (make-vector (cadr shape))))
 	     (tensor-row t v (car indices) 0 (cadr shape))))
 	  (else
 	   (let ((flat-index (apply + (map * strides indices))))
 	     (vector-ref data flat-index))))))
+
+(define (tensor-set! t indices val)
+  (let* ((shape (tensor-shape (car t)))
+	 (data (tensor-data (car t)))
+	 (strides (cdr t))
+	 (flat-index (apply + (map * strides indices))))
+    (vector-set! data flat-index val)))
 
 ;; check if indices are out of bounds
 (define (out-of-bounds? idx shape)
@@ -130,3 +137,4 @@
 		    (vector-length (tensor-data (car v2)))
 		    (vector-length (tensor-data (car v1))))
       (error "Tensors are not of the same dimension -- GAXPY.")))
+
