@@ -23,19 +23,32 @@
 		  (else (scan-go f (f q (car ls)) (cdr ls))))))
   (scan-go * 1 ls))
 
+;; access tensor row
+(define (tensor-row t data start end)
+  (if (= start end)
+      (tensor (list start) data)
+      (begin
+	(vector-set! data start (tensor-ref t (list start end)))
+	(tensor-row t data (+ start 1) end))))
+
 ;; access tensor element
 (define (tensor-ref t indices)
   (let* ((shape (tensor-shape (car t)))
 	 (data (tensor-data (car t)))
 	 (strides (cdr t)))
-    (if (out-of-bounds? indices shape)
-	(error indices "Are out of bounds!")
-	(let ((flat-index (apply + (map * strides indices))))
-	  (vector-ref data flat-index)))))
+    (cond ((out-of-bounds? indices shape)
+	   (error indices "Are out of bounds!"))
+	  ((< (length indices) (length shape))
+	   (let ((v (make-vector (cadr shape))))
+	     (tensor-row t v 0 (cadr shape))))
+	  (else
+	   (let ((flat-index (apply + (map * strides indices))))
+	     (vector-ref data flat-index))))))
 
 ;; check if indices are out of bounds
 (define (out-of-bounds? idx shape)
-  (any > idx shape))
+  (or (> (length idx) (length shape))
+      (any > idx shape)))
 
 ;; reshape function
 (define (reshape t shape)
