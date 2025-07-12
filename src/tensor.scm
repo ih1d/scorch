@@ -24,12 +24,12 @@
   (scan-go * 1 ls))
 
 ;; access tensor row
-(define (tensor-row t data start end)
-  (if (= start end)
-      (tensor (list start) data)
+(define (tensor-row t data idx i n)
+  (if (= i n)
+      (tensor (list n) data (tensor-dtype (car t)))
       (begin
-	(vector-set! data start (tensor-ref t (list start end)))
-	(tensor-row t data (+ start 1) end))))
+	(vector-set! data i (tensor-ref t (list idx i)))
+	(tensor-row t data idx (+ i 1) n))))
 
 ;; access tensor element
 (define (tensor-ref t indices)
@@ -38,9 +38,9 @@
 	 (strides (cdr t)))
     (cond ((out-of-bounds? indices shape)
 	   (error indices "Are out of bounds!"))
-	  ((< (length indices) (length shape))
+	  ((null? (cdr indices))
 	   (let ((v (make-vector (cadr shape))))
-	     (tensor-row t v 0 (cadr shape))))
+	     (tensor-row t v (car indices) 0 (cadr shape))))
 	  (else
 	   (let ((flat-index (apply + (map * strides indices))))
 	     (vector-ref data flat-index))))))
