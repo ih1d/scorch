@@ -139,5 +139,5 @@
       (error "Tensors are not of the same dimension -- GAXPY.")))
 
 ;; outer product
-(define (outer-product A x y)
+
   
