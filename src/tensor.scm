@@ -139,5 +139,26 @@
       (error "Tensors are not of the same dimension -- GAXPY.")))
 
 ;; outer product
+(define (outer-product a x y)
+  (define (outer-product-helper a x y i j m n)
+    (define (inner-loop a x y i j n)
+      (if (not (= j n))
+	  (let* ((aij (tensor-ref a (list i j)))
+		 (xi (tensor-ref x (list i)))
+		 (yj (tensor-ref y (list j))))
+	    (begin
+	      (tensor-set! a (list i j) (+ aij (* xi yj)))
+	      (inner-loop a x y i (+ j 1) n)))))
+    (if (not (= i m))
+	(begin
+	  (inner-loop a x y i j n)
+	  (outer-product-helper a x y (+ i 1) 0 m n))))
+  (if (and (same-rows? a x)
+	   (same-columns? a y))
+      (outer-product-helper a x y 0 0
+			    (vector-length (tensor-data (car x)))
+			    (vector-length (tensor-data (car y))))
+      (error "Tensors are not of the same dimension -- OUTER-PRODUCT.")))
 
-  
+
+;; matrix multiplication
