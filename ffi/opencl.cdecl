@@ -5,3 +5,5 @@
 (typedef CLContext (* cl_context))
 
 (typedef CLKernel (* cl_kernel))
+
+(typedef CLMem (* cl_mem))
