@@ -181,6 +181,29 @@
 			    (vector-length (tensor-data (car y))))
       (error "Tensors are not of the same dimension -- OUTER-PRODUCT.")))
 
+;; Matrix addition
+(define (matadd a b)
+  (define (outer-loop A B C i j m n)
+    (define (inner-loop A B C i j m n)
+      (if (not (= j n))
+	  (let* ((aij (tensor-ref A (list i j)))
+		 (bij (tensor-ref B (list i j))))
+	    (begin
+	      (tensor-set! C (list i j) (+ aij bij))
+	      (inner-loop A B C i (+ j 1) m n)))))	  	      
+    (if (not (= i m))
+	(begin
+	  (inner-loop A B C i j m n)
+	  (outer-loop A B C (+ i 1) 0 m n))
+	C))
+  (if (same-shape? a b)
+      (let* ((shape (tensor-shape (car a)))
+	     (m (car shape))
+	     (n (cadr shape))
+	     (c (tensor shape (make-vector (* m n) 0) (tensor-dtype (car a)))))
+	(outer-loop a b c 0 0 m n))
+      (error "Tensors are not of the same shape -- MATADD.")))
+
 ;; Matrix multiplication
 (define (matmul a b)
   (define (outer-loop A B C i j k m n r)
