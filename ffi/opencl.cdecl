@@ -1,9 +1,0 @@
-(typedef CLDeviceId (* cl_device_id))
-
-(typedef CLPlatformId (* cl_platform_id))
-
-(typedef CLContext (* cl_context))
-
-(typedef CLKernel (* cl_kernel))
-
-(typedef CLMem (* cl_mem))

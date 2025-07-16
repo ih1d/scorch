@@ -160,5 +160,34 @@
 			    (vector-length (tensor-data (car y))))
       (error "Tensors are not of the same dimension -- OUTER-PRODUCT.")))
 
-
-;; matrix multiplication
+;; Matrix multiplication
+(define (matmul a b)
+  (define (outer-loop A B C i j k m n r)
+    (define (inner-loop A B C i j k m n r)
+      (define (inner-inner-loop A B C i j k m n r)
+	(if (not (= k r))
+	    (let* ((aik (tensor-ref A (list i k)))
+		   (bkj (tensor-ref B (list k j)))
+		   (cij (tensor-ref C (list i j))))
+	      (begin
+		(tensor-set! C (list i j) (+ cij (* aik bkj)))
+		(inner-inner-loop A B C i j (+ k 1) m n r)))))
+      (if (not (= j n))
+	  (begin
+	    (inner-inner-loop A B C i j k m n r)
+	    (inner-loop A B C i (+ j 1) 0 m n r))))
+    (if (not (= i m))
+	(begin
+	  (inner-loop A B C i j k m n r)
+	  (outer-loop A B C (+ i 1) 0 0 m n r))
+	C))
+  (let* ((a-shape (tensor-shape (car a)))
+	 (b-shape (tensor-shape (car b)))
+	 (m (car a-shape))
+	 (n (cadr b-shape))
+	 (r1 (cadr a-shape))
+	 (r2 (car b-shape)))
+    (if (= r1 r2)
+	(let ((c (tensor (list m n) (make-vector (* m n) 0))))
+	  (outer-loop a b c 0 0 0 m n r1))
+	(error "Tensors have incompatible dimensions -- MATMUL."))))
