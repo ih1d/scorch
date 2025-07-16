@@ -91,6 +91,27 @@
 		 (cadr (tensor-shape (car t2)))))))
 
 
+;; transpose
+(define (transpose t)
+  (define (outer-loop A m n i j res)
+    (define (inner-loop A m n i j res)
+      (if (not (= j n))
+	  (begin
+	    (tensor-set! res (list j i) (tensor-ref A (list i j)))
+	    (inner-loop A m n i (+ j 1) res)))	  )
+    (if (not (= i m))
+	(begin
+	  (inner-loop A m n i j res)
+	  (outer-loop A m n (+ i 1) 0 res))
+	res))
+  (let* ((shape (tensor-shape (car t)))
+	 (rows (car shape))
+	 (cols (cadr shape))
+	 (c (tensor (list cols rows)
+		    (make-vector (* rows cols) 0)
+		    (tensor-dtype (car t)))))
+    (outer-loop t rows cols 0 0 c)))
+
 ;; dot product
 (define (dot t1 t2)
   (define (dot-product v1 v2 i n)
