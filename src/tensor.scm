@@ -8,10 +8,10 @@
   (make-tensor data shape order dtype stride)
   tensor?
   (data tensor-data)
-  (shape tensor-shape)
+  (shape tensor-shape tensor-shape-set!)
   (order tensor-order)
-  (dtype tensor-dtype)
-  (stride tensor-stride))
+  (dtype tensor-dtype tensor-dtype-set!)
+  (stride tensor-stride tensor-stride-set!))
 
 ;; Constructor wrapper for tensors
 (define (tensor data #!optional shape order dtype)
@@ -31,7 +31,47 @@
 
 ;; reference a value in the tensor
 (define (tensor-ref t indices)
-  (let* ((data (tensor-data t))
-	 (stride (tensor-stride t))
-	 (flat-index (apply + (map * stride indices))))
-    (vector-ref data flat-index)))
+  (if (out-of-bounds? t indices)
+      (report-out-of-bounds indices)
+      (let* ((data (tensor-data t))
+	     (stride (tensor-stride t))
+	     (flat-index (apply + (map * stride indices))))
+	(vector-ref data flat-index))))
+
+;; zeros
+(define (zeros shape)
+  (let ((v (make-vector (product shape) 0)))
+    (tensor v shape 'rational)))
+
+;; slice row(s)
+(define (slice-row t indices)
+  (cond ((out-of-bounds? t indices)
+	 (report-out-of-bounds indices))
+	((integer? indices) '())
+	((and (list? indices)
+	      (every integer? indices))
+	 '())
+	(else (error indices "incorrect type for slicing rows, expected: integer or list of integers"))))
+
+;; slice col(s)
+(define (slice-col t indices)
+  (cond ((out-of-bounds? t indices)
+	 (report-out-of-bounds indices))
+	((integer? indices) '())
+	((and (list? indices)
+	      (every integer? indices))
+	 '())
+	(else (error indices "incorrect type for slicing columns, expected: integer or list of integers"))))
+
+;; reshape
+(define (reshape t shape)
+  (let ((stride (cdr (reverse (calc-stride (reverse shape))))))	       
+  (begin
+    (tensor-shape-set! t shape)
+    (tensor-stride-set! t stride))))
+
+;; transpose
+(define (transpose t)
+  (let* ((rows (car (tensor-shape t)))
+	 (cols (cadr (tensor-shape t))))
+    (reshape t (list cols rows))))

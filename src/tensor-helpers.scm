@@ -45,7 +45,9 @@
 
 ;; calculate the order of the tensor
 (define (calc-order shape)
-  (length shape))
+  (if (any (lambda (x) (= x 1)) shape)
+      1
+      (length shape)))
 
 ;; calculate the tensor stride
 (define (calc-stride ls)
@@ -53,3 +55,32 @@
     (cons q (cond ((null? ls) '())
 		  (else (scan-go f (f q (car ls)) (cdr ls))))))
   (scan-go * 1 ls))
+
+;; report out of bounds
+(define (report-out-of-bounds indices)
+  (error indices "Index is out of bounds."))
+
+;; out-of-bounds predicate
+(define (out-of-bounds? t i)
+  (let ((shape (tensor-shape t)))
+    (if (integer? i)
+	(any (lambda (x) (> i x)) shape)
+	(or (any > i shape)
+	    (> (length i) (length shape))
+	    (out-of-bounds-rows? t i)
+	    (out-of-bounds-cols? t i)))))
+
+(define (out-of-bounds-rows? t i)
+  (let ((tensor-rows (car (tensor-shape t)))
+	(index-rows (car i)))
+    (> index-rows (- tensor-rows 1))))
+
+(define (out-of-bounds-cols? t i)
+  (let ((tensor-cols (cadr (tensor-shape t)))
+	(index-cols (cadr i)))
+    (> index-cols (- tensor-cols 1))))
+
+;; predicate to determine if tensor is of rank 1
+(define (is-vector? t)
+  (= 1 (tensor-order t)))
+
