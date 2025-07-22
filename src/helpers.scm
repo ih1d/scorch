@@ -49,3 +49,16 @@
               (flatten-helper (cdr lst))))
      (else (cons (car lst) (flatten-helper (cdr lst))))))
   (list->vector (flatten-helper (vector->list v))))
+
+;; take n items from a list
+(define (take n l)
+  (if (= n 0)
+      '()
+      (cons (car l)
+	    (take (- n 1) (cdr l)))))
+
+;; drop n items from a list
+(define (drop n l)
+  (if (= n 0)
+      l
+      (drop (- n 1) (cdr l))))

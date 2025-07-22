@@ -63,7 +63,7 @@
 ;; out-of-bounds predicate
 (define (out-of-bounds? t i)
   (let ((shape (tensor-shape t)))
-    (any > i shape)))
+    (any >= i shape)))
 
 ;; predicate to determine if tensor is of rank 1
 (define (is-vector? t)
@@ -76,3 +76,7 @@
 ;; predicate to determine if tensor is a scalar
 (define (is-scalar? t)
   (= 0 (tensor-order t)))
+
+;; calculate the flat index of a stride
+(define (flat-index index stride)
+  (apply + (map * index stride)))
