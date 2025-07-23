@@ -3,8 +3,16 @@
 
 ;; calculate the shape of the data
 (define (calc-shape data)
-  (cond ((list? data) (calc-shape-list data))
-	((vector? data) (calc-shape-vector data))
+  (cond ((and (list? data)
+	      (list? (car data)))
+	 (calc-shape-list data))
+	((list? data)
+	 (list (length data) 1))
+	((and (vector? data)
+	      (vector? (vector-first data)))
+	 (calc-shape-vector data))
+	((vector? data)
+	 (list (vector-length data) 1))
 	(else (error data "is not the correct type for tensor data, expected: list or vector"))))
 
 (define (calc-shape-list data)

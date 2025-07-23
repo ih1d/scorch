@@ -34,6 +34,18 @@
   (let ((v (make-vector (product shape) 0)))
     (tensor v shape 'rational)))
 
+;; random tensor
+(define (rand shape)
+  (define (loop v i n)
+    (if (= i n)
+	(tensor v shape)
+	(begin
+	  (vector-set! v i (random 1.0))
+	  (loop v (+ i 1) n))))
+  (let ((n (product shape)))
+    (loop (make-vector n 0) 0 n)))
+
+
 ;; slice a tensor
 (define (tensor-ref t indices)
   (define (loop t result indices i n)
@@ -56,15 +68,14 @@
 	   (loop t v indices 0 n)))
 	(else (error indices "incorrect type for tensor-ref, expected: list of integers"))))
 
-;; reshape
-(define (reshape t shape)
-  (let ((stride (cdr (reverse (calc-stride (reverse shape))))))
-  (begin
-    (tensor-shape-set! t shape)
-    (tensor-stride-set! t stride))))
-
 ;; transpose
-(define (transpose t)
-  (let* ((rows (car (tensor-shape t)))
-	 (cols (cadr (tensor-shape t))))
-    (reshape t (list cols rows))))
+(define (transpose t l)
+  (cond ((or (is-vector? t)
+	     (is-matrix? t))
+	 (let* ((shape (tensor-shape t))
+	        (rows (car shape))
+	        (cols (cadr shape))
+		(data (tensor-data t)))
+	   '()))
+	    ((null? l) '())
+	    (else (error t "is too big right now!"))))
