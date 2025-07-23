@@ -1,4 +1,4 @@
-;; Author: Isaac H. Lopez Diaz <isaac.lopez@upr.edu>
+<;; Author: Isaac H. Lopez Diaz <isaac.lopez@upr.edu>
 ;; Description: Tensor data structure
 (load "helpers.scm")
 (load "tensor-helpers.scm")
@@ -93,3 +93,39 @@
 		(new-data (make-vector n 0)))
 	   (loop-matrix data new-data rows cols 0 n)))
 	(else (error t "is too big for now!"))))
+
+;; pretty printing a tensor
+(define (print-data t port)
+  (define (print-row-loop i n)
+    (define (print-element-loop row j k)
+      (if (= j (- k 1))
+	  (display (vector-ref row j) port)
+	  (begin
+	    (display (vector-ref row j) port)
+	    (display ", " port)
+	    (print-element-loop row (+ j 1) k))))
+    (if (= i (- n 1))
+	(let ((row (tensor-data (tensor-ref t (list i)))))
+	  (begin
+	    (display "[" port)
+	    (print-element-loop row 0 (vector-length row))
+	    (display "]")))
+	(let ((row (tensor-data (tensor-ref t (list i)))))
+	  (begin
+	    (display "[" port)
+	    (print-element-loop row 0 (vector-length row))
+	    (display "], " port)
+	    (print-row-loop (+ i 1) n)))))
+  (let ((rows (car (tensor-shape t))))
+    (begin
+      (display "[" port)
+      (print-row-loop 0 rows)
+      (display "]" port))))
+
+(define (print-tensor t port)
+  (display "Tensor=(" port)
+  (display "data=(" port) (print-data t port) (display "), " port)
+  (display "shape=(" port) (display (tensor-shape t) port) (display "), " port)
+  (display "type=(" port) (display (tensor-dtype t) port) (display "))" port))
+
+(define-print-method tensor? print-tensor)
