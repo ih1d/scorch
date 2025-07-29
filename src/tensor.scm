@@ -94,6 +94,8 @@
 	   (loop-matrix data new-data rows cols 0 n)))
 	(else (error t "is too big for now!"))))
 
+;; tensor add
+
 ;; pretty printing a tensor
 (define (print-data t port)
   (define (print-row-loop i n)
