@@ -95,6 +95,12 @@
 	(else (error t "is too big for now!"))))
 
 ;; tensor add
+(define (tensor+ t1 t2)
+  (if (equal? (tensor-shape t1) (tensor-shape t2))
+      (let* ((d1 (tensor-data t1))
+	     (d2 (tensor-data t2)))
+	(tensor (vector-map + d1 d2) (tensor-shape t1)))
+      (error "tensors must be the same shape -- +")))
 
 ;; pretty printing a tensor
 (define (print-data t port)
