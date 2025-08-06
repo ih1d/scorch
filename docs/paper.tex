@@ -3,29 +3,16 @@
 
 \documentclass{article}
 
-\title{A Programming Language Paradigm \\ for Machine Learning}
-
-\author{ISAAC H. LOPEZ DIAZ \\
-  Department of Computer Science, \\
-  Rio Piedras Campus, \\
-  Univerisity of Puerto Rico}
+\title{A Programming Language \\ for Machine Learning}
+\author{Isaac H. Lopez Diaz}
 
 \begin{document}
 \maketitle
 \section{Introduction}
-This paper describes the syntax, the operational and denotational semantics, and implementation
-of a programming language (PL) paradigm for machine learning (ML). \\
-
-The language is reflective, meaning that the language has a reference to its own semantics. The decision for this is explained, but the motivation
-behind such a decision is based on the fact that ML programs tend to show this behaviour. A simple analysis of a TensorFlow or PyTorch program
-can demonstrate why a reflective system can be useful, although not necessary. \\
-
-The treatment of such a language lead to the invention of the Lopez-Topology. The reason for a new topology is simply to adjust this
-new paradigm of programming to type theory. Although the language discussed is dynamically typed, formal type systems can be
-added since the system is a reflective one (here one reason for why a reflective language). \\
-
-Finally, an implementation in Lisp (Scheme) is provided. Lisp was chosen since it has the necessary verbs
-to describe such a system.
+This paper describes a programming language (PL) for machine learning (ML).
+The motivation for designing such a language has been explained in \cite{mlpl}.
+One can even argue that ML is its own paradigm,
+motivating even further the need for the design and description of such a language. \\
 
 \section{Syntax}
 

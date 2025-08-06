@@ -1,4 +1,4 @@
-<;; Author: Isaac H. Lopez Diaz <isaac.lopez@upr.edu>
+;; Author: Isaac H. Lopez Diaz <isaac.lopez@upr.edu>
 ;; Description: Tensor data structure
 (load "helpers.scm")
 (load "tensor-helpers.scm")
